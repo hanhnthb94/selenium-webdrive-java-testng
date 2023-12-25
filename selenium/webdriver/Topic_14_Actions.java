@@ -4,6 +4,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.Color;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -11,17 +12,21 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Topic_14_Actions {
     WebDriver driver;
     WebDriverWait explicitWait;
     Actions actions;
     WebElement buttonX;
+    JavascriptExecutor javascriptExecutor;
 
     @BeforeClass
     public void beforeClass() {
@@ -139,12 +144,68 @@ public class Topic_14_Actions {
         }
     }
 
+    @Test
+    public void TC_06_RightClick() {
+        driver.get("http://swisnl.github.io/jQuery-contextMenu/demo.html");
+        Assert.assertFalse(driver.findElement(By.cssSelector("li.context-menu-icon-paste")).isDisplayed());
+        actions.contextClick(driver.findElement(By.cssSelector("span.context-menu-one"))).perform(); sleepInSeconds(1);
+        Assert.assertTrue(driver.findElement(By.cssSelector("li.context-menu-icon-paste")).isDisplayed());
+        actions.moveToElement(driver.findElement(By.cssSelector("li.context-menu-icon-paste"))).perform(); sleepInSeconds(1);
+        Assert.assertTrue(driver.findElement(By.cssSelector("li.context-menu-icon-paste.context-menu-hover.context-menu-visible")).isDisplayed());
+        actions.click(driver.findElement(By.cssSelector("li.context-menu-icon-paste"))).perform();
+        sleepInSeconds(2);
+        driver.switchTo().alert().accept();
+        sleepInSeconds(1);
+        Assert.assertFalse(driver.findElement(By.cssSelector("li.context-menu-icon-paste")).isDisplayed());
+    }
+
+    @Test
+    public void TC_07_DragDropHTML4() {
+        driver.get("https://automationfc.github.io/kendo-drag-drop/");
+        WebElement smallCircle = driver.findElement(By.cssSelector("div#draggable"));
+        WebElement bigCircle = driver.findElement(By.cssSelector("div#droptarget"));
+        actions.dragAndDrop(smallCircle, bigCircle).perform();
+        sleepInSeconds(1);
+        Assert.assertEquals(bigCircle.getText(), "You did great!");
+        Assert.assertEquals(Color.fromString(bigCircle.getCssValue("background-color")).asHex().toLowerCase(), "#03a9f4");
+    }
+    @Test
+    public void TC_08_DragDropHTML5_Css() throws IOException {
+        driver.get("https://automationfc.github.io/drag-drop-html5/");
+        WebElement columnA = driver.findElement(By.cssSelector("div#column-a"));
+        WebElement columnB = driver.findElement(By.cssSelector("div#column-a"));
+        String projectPath = System.getProperty("user.dir");
+        String dragAndDropFilePath = projectPath + "/dragAndDrop/drag_and_drop_helper.js";
+        String jsContentFile = getContentFile(dragAndDropFilePath);
+        // Thuc thi doan lenh JS
+        javascriptExecutor.executeScript(jsContentFile);
+        sleepInSeconds(3);
+    }
+    @Test
+    public void TC_09_DragDropHTML5_XPath() {
+        driver.get("https://automationfc.github.io/drag-drop-html5/");
+    }
+    public String getContentFile(String filePath) throws IOException {
+        Charset cs = Charset.forName("UTF-8");
+        FileInputStream stream = new FileInputStream(filePath);
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(stream, cs));
+            StringBuilder builder = new StringBuilder();
+            char[] buffer = new char[8192];
+            int read;
+            while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+                builder.append(buffer, 0, read);
+            }
+            return builder.toString();
+        } finally {
+            stream.close();
+        }
+    }
+
     @AfterClass
     public void afterClass() {
         driver.quit();
     }
-
-
 
 
 

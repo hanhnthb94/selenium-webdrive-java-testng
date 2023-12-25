@@ -10,6 +10,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +31,47 @@ public class Topic_00_Template {
     public void TC_01_() {
 
     }
+    @Test
+    public void TC_02_() {
 
+    }
+    @Test
+    public void TC_03_() {
+
+    }
+    @Test
+    public void TC_04_() {
+
+    }
+    @Test
+    public void TC_05_() {
+
+    }
+    @Test
+    public void TC_06_() {
+
+    }
+    @Test
+    public void TC_07_() {
+
+    }
+
+    public String getContentFile(String filePath) throws IOException {
+        Charset cs = Charset.forName("UTF-8");
+        FileInputStream stream = new FileInputStream(filePath);
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(stream, cs));
+            StringBuilder builder = new StringBuilder();
+            char[] buffer = new char[8192];
+            int read;
+            while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+                builder.append(buffer, 0, read);
+            }
+            return builder.toString();
+        } finally {
+            stream.close();
+        }
+    }
 
     @AfterClass
     public void afterClass() {
