@@ -1,6 +1,7 @@
 package webdriver;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -15,7 +16,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
-public class Topic_16_Popup_02 {
+public class Topic_16_Shadow_DOM {
     WebDriver driver;
     WebDriverWait explicitWait;
 
@@ -27,42 +28,43 @@ public class Topic_16_Popup_02 {
     }
 
     @Test
-    public void TC_01_Random_Popup_Not_In_DOM() {
-        driver.get("https://www.javacodegeeks.com/");
-        sleepInSeconds(5);
-        // Delete cookie: shift ctrl delete
-        By newsLetterPopup = By.cssSelector("div.lepopup-popup-container>div:not([style^='display:none'])");
-        // Neu hien thi thi nhan close popup di
-        if (driver.findElements(newsLetterPopup).size() > 0 && driver.findElements(newsLetterPopup).get(0).isDisplayed()) {
-            driver.findElement(By.cssSelector("div.lepopup-popup-container>div:not([style^='display:none']) div.lepopup-element-html-content>a")).click();
-        }
-        // Neu ko hien thi qua steps tiep theo (search du lieu)
-        // Nhap vao field search du lieu
-        driver.findElement(By.cssSelector("input#search-input")).sendKeys("Agile Testing Explained");
-        driver.findElement(By.cssSelector("button#search-submit")).click();
-        Assert.assertTrue(driver.findElement(By.xpath("//div[@class='post-details']//a[text()='Agile Testing Explained']")).isDisplayed());
-
+    public void TC_01_Shadow_DOM() {
+        driver.get("https://automationfc.github.io/shadow-dom");
+        // Bắt element shadownDom thì phải Đi theo đúng cấu trúc của HTML
+        // Bắt từ thẻ chứa shadownDom trước
+        // shadow root: chua support su dung xpath, tagName
+        // driver: dai dien cho real DOM 1
+        WebElement shadowHostElement = driver.findElement(By.cssSelector("div#shadow_host"));
+        // shadowRootContext: dai dien cho shadow DOM ben trong (shadow host) 2 trong 1
+        SearchContext shadowRootContext = shadowHostElement.getShadowRoot();
+        String someText = shadowRootContext.findElement(By.cssSelector("span#shadow_content>span")).getText();
+        System.out.println(someText);
+        Assert.assertEquals(someText, "some text");
+        List<WebElement> allInput = shadowRootContext.findElements(By.cssSelector("input"));
+        System.out.println(allInput.size());
+        // nestedShadowHostElement: dai dien cho cai nested shadow DOM 3 trong 2
+        WebElement nestedShadowHostElement = shadowRootContext.findElement(By.cssSelector("div#nested_shadow_host"));
+        SearchContext nestedShadowRootContext = nestedShadowHostElement.getShadowRoot();
+        String nestedText = nestedShadowRootContext.findElement(By.cssSelector("div#nested_shadow_content>div")).getText();
+        Assert.assertEquals(nestedText, "nested text");
     }
     @Test
-    public void TC_02_Random_Popup_In_DOM() {
-        driver.get("https://vnk.edu.vn/");
-        sleepInSeconds(3);
-        findElement(By.xpath("//button[text()='Danh sách khóa học']")).click();
-        Assert.assertEquals(driver.getCurrentUrl(), "https://vnk.edu.vn/lich-khai-giang/");
+    public void TC_02_Shadow_DOM_Shopee() {
+        driver.get("https://shopee.vn/");
+        System.out.println(driver.getCurrentUrl());
+            WebElement shadowHostElement = driver.findElement(By.cssSelector("shopee-banner-popup-stateful"));
+            SearchContext shadowHostContext = shadowHostElement.getShadowRoot();
+            // Verify hien thi
+            if (shadowHostContext.findElements(By.cssSelector("div.home-popup__content")).size() > 0 &&
+                    shadowHostContext.findElements(By.cssSelector("div.home-popup__content")).get(0).isDisplayed()) {
+                shadowHostContext.findElement(By.cssSelector("div.shopee-popup__close-btn>svg")).click();
+            }
+            driver.findElement(By.cssSelector("input.shopee-searchbar-input__input")).sendKeys("iPhone 15 Pro Max");
+            driver.findElement(By.cssSelector("button.shopee-searchbar__search-button>svg")).click();
     }
     @Test
     public void TC_03_Random_Popup_Not_In_DOM() {
         driver.get("https://dehieu.vn/");
-        sleepInSeconds(3);
-        By inviteGroupPopup = By.cssSelector("div.popup-content");
-        // Neu hien thi thi nhan close popup di
-        if (driver.findElements(inviteGroupPopup).size() > 0 && driver.findElements(inviteGroupPopup).get(0).isDisplayed()) {
-            driver.findElement(By.cssSelector("button#close-popup")).click();
-        }
-        // Neu ko hien thi qua steps tiep theo (search du lieu)
-        // Nhap vao field search du lieu
-        driver.findElement(By.xpath("//a[text()='Đăng nhập']")).click();
-        Assert.assertEquals(driver.getCurrentUrl(), "https://dehieu.vn/dang-nhap");
     }
 
     public WebElement findElement(By locator) {
