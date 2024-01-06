@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class Topic_00_Template {
     WebDriver driver;
@@ -77,6 +78,42 @@ public class Topic_00_Template {
     public void afterClass() {
         driver.quit();
     }
+
+    public void switchToWindowByID(String expectedID) {
+        Set<String> allIDs = driver.getWindowHandles();
+        for (String id: allIDs) {
+            if (!id.equals(expectedID)) {
+                driver.switchTo().window(id);
+                break;
+            }
+        }
+    }
+
+    public void switchToWindowByTitle(String expectedTitle) {
+        Set<String> allIDs = driver.getWindowHandles();
+        for (String id: allIDs) {
+            // switch truoc
+            driver.switchTo().window(id);
+            sleepInSeconds(2);
+            // Lay ra title cua
+            String actualTitle = driver.getTitle();
+            if (actualTitle.equals(expectedTitle)) {
+                break;
+            }
+        }
+    }
+
+    public void closeAllWindowWithoutParent(String parentID) {
+        Set<String> allIDs = driver.getWindowHandles();
+        for (String id: allIDs) {
+            if (!id.equals(parentID)) {
+                driver.switchTo().window(id);
+                driver.close();
+            }
+        }
+        driver.switchTo().window(parentID);
+    }
+
 
     public void sleepInSeconds ( long timeInSecond){
         try {
