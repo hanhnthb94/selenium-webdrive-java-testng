@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -17,9 +18,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class Topic_00_Template {
+public class Topic_21_Upload_File {
     WebDriver driver;
     WebDriverWait explicitWait;
+    String projectPath = System.getProperty("user.dir");
+    String oneName = "one.jpg"; String twoName = "two.jpg"; String threeName = "three.jpg";
+    String oneFilePath = projectPath + File.separator + "uploadFiles" + File.separator + oneName;
+    String twoFilePath = projectPath + File.separator + "uploadFiles" + File.separator + twoName;
+    String threeFilePath = projectPath + File.separator + "uploadFiles" + File.separator + threeName;
 
     @BeforeClass
     public void beforeClass() {
@@ -29,32 +35,64 @@ public class Topic_00_Template {
     }
 
     @Test
-    public void TC_01_() {
+    public void TC_01_Single_File() {
+        driver.get("https://blueimp.github.io/jQuery-File-Upload/");
+        //String filePathn = 'D:\\AUTO\\img\\2023-12-24_11-19-31-000.jpg';
+        // Windows: \\
+        // MAC: /
+        // File nam o dau
+        // Trong thu muc uploadFile
+        // Neu may khac dung OS khac co chay duoc k
+        // Duong dan tuong doi cua file do
+        By uploadBy = By.cssSelector("input[name='files[]']");
+        driver.findElement(uploadBy).sendKeys(oneFilePath);
+        sleepInSeconds(2);
+        driver.findElement(uploadBy).sendKeys(twoFilePath);
+        sleepInSeconds(2);
+        driver.findElement(uploadBy).sendKeys(threeFilePath);
+        sleepInSeconds(2);
+        // Verify file loader success
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + oneName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + twoName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + threeName + "']")).isDisplayed());
+
+
+        List<WebElement> startButtons = driver.findElements(By.cssSelector("td>button.start"));
+        // classic for
+        /*for (int i = 0; i < startButtons.size(); i++) {
+            if (startButtons.get(i).isDisplayed()) {
+                startButtons.get(i).click();
+                sleepInSeconds(2);
+            }
+        }*/
+        // For-each
+        for (WebElement button: startButtons) {
+            button.click();
+            sleepInSeconds(2);
+        }
+        // Verify file upload success
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + oneName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + twoName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + threeName + "']")).isDisplayed());
 
     }
     @Test
-    public void TC_02_() {
-
-    }
-    @Test
-    public void TC_03_() {
-
-    }
-    @Test
-    public void TC_04_() {
-
-    }
-    @Test
-    public void TC_05_() {
-
-    }
-    @Test
-    public void TC_06_() {
-
-    }
-    @Test
-    public void TC_07_() {
-
+    public void TC_02_Multiple_File() {
+        driver.get("https://blueimp.github.io/jQuery-File-Upload/");
+        By uploadBy = By.cssSelector("input[name='files[]']");
+        driver.findElement(uploadBy).sendKeys(oneFilePath + "\n" + twoFilePath + "\n" + threeFilePath);
+        sleepInSeconds(2);
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + oneName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + twoName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[text()='" + threeName + "']")).isDisplayed());
+        List<WebElement> startButtons = driver.findElements(By.cssSelector("td>button.start"));
+        for (WebElement button: startButtons) {
+            button.click();
+            sleepInSeconds(2);
+        }
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + oneName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + twoName + "']")).isDisplayed());
+        Assert.assertTrue(driver.findElement(By.xpath("//p[@class='name']/a[@title='" + threeName + "']")).isDisplayed());
     }
 
     public String getContentFile(String filePath) throws IOException {
