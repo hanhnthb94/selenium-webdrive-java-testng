@@ -2,7 +2,6 @@ package webdriver;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -12,13 +11,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.time.Duration;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
-public class Topic_27_Wait_07_Explicit_03 {
+public class Topic_28_Wait_07_Explicit_03 {
     WebDriver driver;
     WebDriverWait explicitWait; // buoc nay la buoc khai bao, chua khoi tao
     String projectPath = System.getProperty("user.dir");
