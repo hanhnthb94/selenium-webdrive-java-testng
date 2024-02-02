@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="Selenium WebDriver" verbose="1" >
+    <test name="Run on Chrome browser" >
+        <classes>
+            <class name="testng.Topic_01_Sample" />
+        </classes>
+    </test>
+</suite>
